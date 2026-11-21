@@ -32,10 +32,10 @@ extraScrapeConfigs:
     relabel_configs:
       - target_label: service
         replacement: jithendar-com
-  # jithendar.com's SEO agent (mrjithendar/moks-seo-agent): flows, crews, tasks, tool calls, LLM spend, MCP.
+  # jithendar.com's SEO agent (mrjithendar/moks-seo-agent): flows, crews, tasks, tool calls, LLM spend, news desk, MCP.
   # /metrics on the internal API port through the headless Service seo-agent-metrics; the seo-agent NetworkPolicy
   # (jithendar.com kubernetes/seo-agent-40-seo-agent.yaml) admits app=roboshop-prometheus on 8080. Dashboards:
-  # Jithendar.com · SEO agents and · CrewAI (job=~"seo-agent|news-agent").
+  # Jithendar.com · SEO agents, · CrewAI and · News desk, which all select job="seo-agent".
   - job_name: seo-agent
     metrics_path: /metrics
     dns_sd_configs:
@@ -45,19 +45,6 @@ extraScrapeConfigs:
     relabel_configs:
       - target_label: service
         replacement: seo-agent
-  # jithendar.com's news agent (mrjithendar/newsroom, the news desk since 2026-11-21): news flows, the News Desk crew,
-  # its ML and covers. The same shape as seo-agent: headless Service news-agent-metrics, port 8080; its NetworkPolicy
-  # (jithendar.com kubernetes/news-agent-40-news-agent.yaml) admits app=roboshop-prometheus. Dashboards: Jithendar.com ·
-  # News desk (job="news-agent") and · CrewAI. No target until the news agent is deployed.
-  - job_name: news-agent
-    metrics_path: /metrics
-    dns_sd_configs:
-      - names: ["news-agent-metrics.jithendar.svc.cluster.local"]
-        type: A
-        port: 8080
-    relabel_configs:
-      - target_label: service
-        replacement: news-agent
   # MOKS (namespace moks-sre, mrjithendar/moks-sre): every MOKS process (app=moks: api, worker, crewai, executor,
   # terminal) and the reranker and embedder, found by pod (pod list/watch, istioMetrics) so each series says which one:
   # instance and pod are the pod name, component is the process (the MOKS dashboards' Component variable). Prometheus
